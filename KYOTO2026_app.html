@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KYOTO 2026</title>
+
+<style>
+:root {
+  --bg:#F5F4F0;
+  --surface:#FFFFFF;
+  --border:#E2E0D8;
+  --text:#1A1A18;
+  --muted:#7A7870;
+  --accent:#3D52A0;
+  --accent-bg:#EEF0FA;
+  --radius:16px;
+}
+
+* {
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+body {
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+
+.header {
+  position:sticky;
+  top:0;
+  background:white;
+  padding:1rem;
+  border-bottom:1px solid var(--border);
+}
+
+h1 {
+  margin-bottom:1rem;
+}
+
+.search {
+  width:100%;
+  padding:0.9rem 1rem;
+  border-radius:14px;
+  border:1px solid var(--border);
+  font-size:16px;
+}
+
+#list {
+  padding:1rem;
+}
+
+.section-label {
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:0.08em;
+  color:var(--muted);
+  margin:1rem 0 0.6rem;
+  font-weight:700;
+}
+
+.card {
+  background:white;
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:1rem;
+  margin-bottom:10px;
+  cursor:pointer;
+}
+
+.card-name {
+  font-size:16px;
+  font-weight:600;
+}
+
+.card-sub {
+  margin-top:4px;
+  color:var(--muted);
+  font-size:14px;
+}
+
+#detail {
+  display:none;
+  padding:1rem;
+}
+
+.back {
+  margin-bottom:1rem;
+  border:none;
+  background:none;
+  color:var(--accent);
+  font-size:16px;
+  cursor:pointer;
+}
+
+.detail-card {
+  background:white;
+  border-radius:20px;
+  overflow:hidden;
+  border:1px solid var(--border);
+}
+
+.detail-top {
+  padding:1.5rem;
+  border-bottom:1px solid var(--border);
+}
+
+.detail-name {
+  font-size:22px;
+  font-weight:700;
+}
+
+.detail-program {
+  margin-top:6px;
+  color:var(--muted);
+}
+
+.section-block {
+  padding:1.2rem 1.4rem;
+  border-bottom:1px solid var(--border);
+}
+
+.section-title {
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:0.08em;
+  color:var(--accent);
+  margin-bottom:1rem;
+  font-weight:700;
+}
+
+.field {
+  margin-bottom:0.9rem;
+}
+
+.field:last-child {
+  margin-bottom:0;
+}
+
+.field-label {
+  font-size:11px;
+  color:var(--muted);
+  text-transform:uppercase;
+  margin-bottom:4px;
+}
+
+.field-value {
+  font-size:15px;
+  line-height:1.4;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <h1>KYOTO 2026</h1>
+  <input class="search" id="search" type="search" placeholder="Buscar estudiante..." oninput="render()">
+</div>
+
+<div id="list"></div>
+
+<div id="detail">
+  <button class="back" onclick="backToList()">← Regresar</button>
+  <div class="detail-card">
+    <div class="detail-top">
+      <div class="detail-name" id="d-name"></div>
+      <div class="detail-program" id="d-program"></div>
+    </div>
+    <div id="d-content"></div>
+  </div>
+</div>
+
+<script>
+
+const DATA = [{"nombre": "Carmina Nicole Mata Pérez", "programa": "Genki Japanese & Culture School, Kyoto - Tópico de idioma: Japonés, Kyoto, Japón,", "campus": "Aguascalientes", "correo": "A01233965@tec.mx", "correoPersonal": "carmina.nicole@icloud.com", "telefono": "8711491361", "nacionalidad": "Mexicana", "fechaNacimiento": "1987-02-24", "pasaporte": "", "visa": "No", "direccion": "", "_tipo": "principal"}, {"nombre": "Juliette Aguilera Lizárraga", "programa": "Genki Japanese & Culture School, Kyoto - Tópico de idioma: Japonés, Kyoto, Japón,", "campus": "Aguascalientes", "correo": "A01743474@tec.mx", "correoPersonal": "jttlandey@gmail.com", "telefono": "6671170328", "nacionalidad": "Mexicana", "fechaNacimiento": "1987-07-15", "pasaporte": "", "visa": "No", "direccion": "", "_tipo": "principal"}, {"nombre": "Maya Recio Saucedo", "programa": "Genki Japanese & Culture School, Kyoto - Tópico de idioma: Japonés, Kyoto, Japón,", "campus": "Aguascalientes", "correo": "A01288420@tec.mx", "correoPersonal": "mayagure@gmail.com", "telefono": "8183095867", "nacionalidad": "Mexicana", "fechaNacimiento": "1978-06-12", "pasaporte": "", "visa": "No", "direccion": "Bahía de la Paz 3725 Rincón de la Primavera Monterrey Nuevo León", "_tipo": "principal"}, {"nombre": "Diana Laura López de Lara Herrera", "programa": "Genki Japanese & Culture School, Kyoto - Tópico de idioma: Japonés, Kyoto, Japón,", "campus": "Aguascalientes", "correo": "A01712785@tec.mx", "correoPersonal": "a01712785@tec.mx", "telefono": "8184736987", "nacionalidad": "Mexicana", "fechaNacimiento": "1983-04-22", "pasaporte": "", "visa": "No", "direccion": "", "_tipo": "principal"}, {"nombre": "Mauricio González Franco", "programa": "Genki Japanese & Culture School, Kyoto - Tópico de idioma: Japonés, Kyoto, Japón,", "campus": "Aguascalientes", "correo": "A01786395@tec.mx", "correoPersonal": "mauglez628@gmail.com", "telefono": "5527274662", "nacionalidad": "Mexicana", "fechaNacimiento": "1974-01-12", "pasaporte": "", "visa": "No", "direccion": "", "_tipo": "principal"}, {"nombre": "Jesús Pablo Matus Nieblas", "programa": "Genki Japanese & Culture School, Kyoto - Tópico de idioma: Japonés, Kyoto, Japón,", "campus": "Aguascalientes", "correo": "A01572978@tec.mx", "correoPersonal": "A01572978@tec.mx", "telefono": "8116907542", "nacionalidad": "Mexicana", "fechaNacimiento": "1975-04-24", "pasaporte": "", "visa": "No", "direccion": "", "_tipo": "principal"}, {"nombre": "María José Alcazar Estrada", "programa": "Genki Japanese & Culture School, Kyoto - Tópico de idioma: Japonés, Kyoto, Japón,", "campus": "Aguascalientes", "correo": "A01563802@tec.mx", "correoPersonal": "a01563802@tec.mx", "telefono": "6142208402", "nacionalidad": "Mexicana", "fechaNacimiento": "1982-05-16", "pasaporte": "", "visa": "No", "direccion": "", "_tipo": "principal"}, {"nombre": "Yariana Hernández Fuerte", "programa": "Genki Japanese & Culture School, Kyoto - Tópico de idioma: Japonés, Kyoto, Japón,", "campus": "Aguascalientes", "correo": "A01739299@tec.mx", "correoPersonal": "A01739299@tec.mx", "telefono": "2381099600", "nacionalidad": "Mexicana", "fechaNacimiento": "1977-04-14", "pasaporte": "", "visa": "No", "direccion": "", "_tipo": "principal"}, {"nombre": "Bruno Aguilar Moreno", "programa": "Genki Japanese & Culture School, Kyoto - Tópico de idioma: Japonés, Kyoto, Japón,", "campus": "Aguascalientes", "correo": "A01802187@tec.mx", "correoPersonal": "A01802187@tec.mx", "telefono": "5530060543", "nacionalidad": "Mexicana", "fechaNacimiento": "1977-03-28", "pasaporte": "", "visa": "No", "direccion": "", "_tipo": "principal"}, {"nombre": "Iker Rene Navarrete Pérez", "programa": "Genki Japanese & Culture School, Kyoto - Tópico de idioma: Japonés, Kyoto, Japón,", "campus": "Aguascalientes", "correo": "A01713926@tec.mx", "correoPersonal": "ikertort@hotmail.com", "telefono": "4421099966", "nacionalidad": "Mexicana", "fechaNacimiento": "1979-02-27", "pasaporte": "", "visa": "No", "direccion": "", "_tipo": "principal"}];
+
+function render() {
+  const q = document.getElementById('search').value.toLowerCase();
+  const list = document.getElementById('list');
+
+  const principales = DATA.filter(x =>
+    x._tipo === 'principal' &&
+    x.nombre.toLowerCase().includes(q)
+  );
+
+  const secundarios = DATA.filter(x =>
+    x._tipo === 'secundario' &&
+    x.nombre.toLowerCase().includes(q)
+  );
+
+  let html = '';
+
+  if(principales.length) {
+    html += '<div class="section-label">Grupo Adri</div>';
+    principales.forEach((c,i) => {
+      html += card(c, DATA.indexOf(c));
+    });
+  }
+
+  if(secundarios.length) {
+    html += '<div class="section-label">Otros</div>';
+    secundarios.forEach((c,i) => {
+      html += card(c, DATA.indexOf(c));
+    });
+  }
+
+  list.innerHTML = html;
+}
+
+function card(c, idx) {
+  return `
+    <div class="card" onclick="showDetail(${idx})">
+      <div class="card-name">${c.nombre}</div>
+      <div class="card-sub">${c.programa || ''}</div>
+      <div class="card-sub">${c.telefono || ''}</div>
+    </div>
+  `;
+}
+
+function showDetail(idx) {
+  const c = DATA[idx];
+
+  document.getElementById('list').style.display = 'none';
+  document.querySelector('.header').style.display = 'none';
+  document.getElementById('detail').style.display = 'block';
+
+  document.getElementById('d-name').textContent = c.nombre;
+  document.getElementById('d-program').textContent = c.programa || '';
+
+  const sections = [
+    {
+      title:'👤 Información General',
+      fields:[
+        ['Campus', c.campus],
+        ['Correo institucional', c.correo],
+        ['Correo personal', c.correoPersonal],
+        ['Teléfono', c.telefono],
+        ['Nacionalidad', c.nacionalidad],
+        ['Fecha nacimiento', c.fechaNacimiento]
+      ]
+    },
+    {
+      title:'✈️ Documentación',
+      fields:[
+        ['Pasaporte', c.pasaporte],
+        ['Visa americana', c.visa]
+      ]
+    },
+    {
+      title:'📍 Dirección',
+      fields:[
+        ['Dirección', c.direccion]
+      ]
+    }
+  ];
+
+  let html = '';
+
+  sections.forEach(sec => {
+    const valid = sec.fields.filter(f => f[1]);
+
+    if(valid.length === 0) return;
+
+    html += `
+      <div class="section-block">
+        <div class="section-title">${sec.title}</div>
+    `;
+
+    valid.forEach(f => {
+      html += `
+        <div class="field">
+          <div class="field-label">${f[0]}</div>
+          <div class="field-value">${f[1]}</div>
+        </div>
+      `;
+    });
+
+    html += '</div>';
+  });
+
+  document.getElementById('d-content').innerHTML = html;
+}
+
+function backToList() {
+  document.getElementById('detail').style.display = 'none';
+  document.getElementById('list').style.display = 'block';
+  document.querySelector('.header').style.display = 'block';
+}
+
+render();
+
+</script>
+
+</body>
+</html>
